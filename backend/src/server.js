@@ -7,6 +7,8 @@ import authRoutes from "./routes/auth.route.js"; // .js bcos it is a local file
 import messageRoutes from "./routes/message.route.js"
 import path from "path"; // deployment
 
+import { connectDB } from "./lib/db.js";
+
 
 dotenv.config(); // configure dotenv
 
@@ -40,4 +42,8 @@ app.get("*", (req, res) => {
 
 
 
-app.listen(PORT, () => console.log("Server is runnning on port " + PORT));
+app.listen(PORT, () => {
+
+    console.log("Server is runnning on port " + PORT)
+    connectDB();
+});
