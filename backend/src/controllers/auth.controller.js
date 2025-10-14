@@ -1,8 +1,9 @@
+import { sendWelcomeEmail } from "../emails/emailHandlers.js";
 import { generateToken } from "../lib/utils.js";
 
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs"
-
+import "dotenv/config";
 
 
 export const signup = async(req, res) => {
@@ -46,8 +47,8 @@ export const signup = async(req, res) => {
         // Now what to do, Node to bana liya. Ab add karo
         if(newUser){
             // we will generate a token, pass the new user 
+            const savedUser = await newUser.save()
             generateToken(newUser._id, res)
-            await newUser.save()
 
             // Now we wil give the status code of 201 i.e. something is created
             res.status(201).json({
@@ -57,8 +58,20 @@ export const signup = async(req, res) => {
                 profilePic: newUser.profilePic,
             });
 
+            
+
 
             // TODO: Send a welcome email to user
+            try {
+                
+                await sendWelcomeEmail(savedUser.email, savedUser.fullName, process.env.CLIENT_URI);
+                
+            } catch (error) {
+                
+                console.error("Failed to send welcome email:", error);
+                
+            }
+            
 
         } else {
             res.status(400).json({message: "Invalid user data"})
