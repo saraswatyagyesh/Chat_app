@@ -3,10 +3,11 @@
 // const express = require("express");
 import express from "express";
 import dotenv from "dotenv"; // to use .env file
-import authRoutes from "./routes/auth.route.js"; // .js bcos it is a local file
-import messageRoutes from "./routes/message.route.js"
 import path from "path"; // deployment
 
+
+import authRoutes from "./routes/auth.route.js"; // .js bcos it is a local file
+import messageRoutes from "./routes/message.route.js"
 import { connectDB } from "./lib/db.js";
 
 
@@ -18,6 +19,8 @@ const __dirname = path.resolve(); // deployment
 // to check if env file is working
 console.log(process.env.PORT); // O/P 3000
 const PORT = process.env.PORT || 3000;
+
+app.use(express.json()); // middleware this will jsonize the req.body and send it forward
 
 // app.use(PORT, (req, res) => {
 //     res.send("Hail Hitler")
@@ -36,10 +39,7 @@ app.get("*", (req, res) => {
 
     res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
 });
-}
-
-
-
+};
 
 
 app.listen(PORT, () => {
