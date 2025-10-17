@@ -4,11 +4,12 @@
 import express from "express";
 import dotenv from "dotenv"; // to use .env file
 import path from "path"; // deployment
-
+import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/auth.route.js"; // .js bcos it is a local file
 import messageRoutes from "./routes/message.route.js"
 import { connectDB } from "./lib/db.js";
+
 
 
 dotenv.config(); // configure dotenv
@@ -21,6 +22,7 @@ console.log(process.env.PORT); // O/P 3000
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json()); // middleware this will jsonize the req.body and send it forward
+app.use(cookieParser()); // for the protectRoute middleware, we need cookie parser
 
 // app.use(PORT, (req, res) => {
 //     res.send("Hail Hitler")

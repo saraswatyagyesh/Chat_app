@@ -1,5 +1,6 @@
 import { sendWelcomeEmail } from "../emails/emailHandlers.js";
 import { generateToken } from "../lib/utils.js";
+import cloudinary from "../lib/cloudinary.js";
 
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs"
@@ -126,4 +127,36 @@ export const logout = (_, res) => {
 
     res.cookie("jwt", "", {maxAge:0})
     res.status(200).json({message: "Logged out successs"});
+};
+
+export const updateProfile = async(req, res) => {
+
+    try {
+        
+        // get profile pic from req.body
+        const { profilePic } = req.body;
+        if(!profilePic) return res.status(400).json({message: "Profile pic is required"});
+
+        // check for user ID
+        const userId = req.user._id; // req.body is accessable through middleware
+
+        // upload image on cloudinary and get the response
+        const uploadResponse = await cloudinary.uploader.upload(profilePic)
+    
+        const updateUser = await User.findByIdAndUpdate(
+            userId,
+            { profilePic: uploadResponse.secure_url },
+            { new: true } // this will give an update response
+        );
+        // this way there will be an URL linking the profile pic on cloudinary to our database
+
+        // send a response with status code 200
+        res.status(200).json(updateUser)
+
+
+    } catch (error) {
+        
+        console.log("Error in update profile: ", error);
+        res.status(500).json({message: "Internal server error"});
+    }
 };
